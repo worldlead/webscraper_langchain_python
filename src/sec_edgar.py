@@ -6,11 +6,13 @@ import sec_parser as sp
 _dl = Downloader("MyCompanyName", "email@example.com")
 
 def _metadata_to_dict(metadata):
+    print(metadata)
     return {
             'url': metadata.primary_doc_url,
             'cik': metadata.cik,
             'form_type': metadata.form_type,
-            'filing_date': metadata.filing_date
+            'filing_date': metadata.filing_date,
+            'company_name': metadata.company_name
             }
 
 def _request_single_form_type(ticker, form_type):

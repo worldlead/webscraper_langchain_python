@@ -36,6 +36,8 @@
           </form>
           <div id="filingsTable"></div>
           <p id="loadingText" class="hidden">Loading...</p>
+          <div id="pagination"></div>
+          <div id="filingsTable"></div>
       </div>
       <iframe id="documentIFrame" src="" style="display: none"></iframe>
     </div>
@@ -59,34 +61,70 @@
                           alert(data.error);
                           return;
                       }
-                      console.log(data.filings);
                       const filings = data.filings;
-                      const table = `
-                          <table>
-                              <tr>
-                                  <th>Company</th>
-                                  <th>CIK</th>
-                                  <th>Filing Type</th>
-                                  <th>Filing Date</th>
-                                  <th>Link to HTML</th>
-                              </tr>
-                              ${filings.map(filing => `
-                                  <tr>
-                                      <td>${ticker}</td>
-                                      <td>${filing.cik}</td>
-                                      <td>${filing.form_type}</td>
-                                      <td>${filing.filing_date}</td>
-                                      <td><button onclick="openDocumentIFrame('${filing.url}')">View Document</button></td>
-                                  </tr>
-                              `).join('')}
-                          </table>`;
-                      document.getElementById("filingsTable").innerHTML = table;
+                      const filingsPerPage = 20;
+                      const numPages = Math.ceil(filings.length / filingsPerPage);
+                      const currentPage = 1;
+                      updatePage(currentPage, numPages, filings, filingsPerPage);
                   })
                   .catch(error => console.error('Error:', error))
                   .finally(_ => {
                     loadingText.classList.add('hidden');
                   });
         });
+        function updatePage(pageNum, numPages, filings, filingsPerPage) {
+            const startIndex = (pageNum - 1) * filingsPerPage;
+            const endIndex = Math.min(startIndex + filingsPerPage, filings.length);
+            const filingsToShow = filings.slice(startIndex, endIndex);
+
+            console.log(filingsToShow)
+            
+            const tableContent = `
+                <table>
+                    <tr>
+                        <th>Company</th>
+                        <th>CIK</th>
+                        <th>Filing Type</th>
+                        <th>Filing Date</th>
+                        <th>Link to HTML</th>
+                    </tr>
+                    ${filingsToShow.map(filing => `
+                        <tr>
+                            <td>${filing.company_name}</td>
+                            <td>${filing.cik}</td>
+                            <td>${filing.form_type}</td>
+                            <td>${filing.filing_date}</td>
+                            <td><button onclick="openDocumentIFrame('${filing.url}')">View Document</button></td>
+                        </tr>
+                    `).join('')}
+                </table>`;
+
+            const prevPageButton = document.createElement("button");
+            prevPageButton.innerText = "prev";
+            const nextPageButton = document.createElement("button");
+            nextPageButton.innerText = "next";
+            
+            const pageNumText = document.createElement("p");
+            pageNumText.innerText = `page ${pageNum} / ${numPages}`
+
+            prevPageButton.onclick = () => {
+                updatePage(pageNum - 1, numPages, filings, filingsPerPage);
+            }
+            nextPageButton.onclick = () => {
+                updatePage(pageNum + 1, numPages, filings, filingsPerPage);
+            }
+            
+            document.getElementById("filingsTable").innerHTML = tableContent;
+            const paginationContainer = document.getElementById("pagination");
+            paginationContainer.innerHTML = "";
+            if (pageNum > 1) {
+              paginationContainer.appendChild(prevPageButton);
+            }
+            if (pageNum !== numPages) {
+              paginationContainer.appendChild(nextPageButton);
+            }
+            paginationContainer.appendChild(pageNumText);
+      }
     </script>
 </body>
 </html>
