@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEC Filings</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('serve_static', path='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>SEC Filings</h1>
+        <form id="tickerForm">
+            <label for="ticker">Enter Ticker Symbol:</label>
+            <input type="text" id="ticker" name="ticker" required>
+            <button type="submit">Get Recent Filings</button>
+        </form>
+        <div id="filingsTable"></div>
+    </div>
+
+    <script>
+        document.getElementById("tickerForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const ticker = document.getElementById("ticker").value;
+            fetch(`/recent_filings?company=${ticker}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                        return;
+                    }
+                    console.log(data.filings);
+                    const filings = data.filings;
+                    const table = `
+                        <table>
+                            <tr>
+                                <th>Company</th>
+                                <th>CIK</th>
+                                <th>Filing Type</th>
+                                <th>Filing Date</th>
+                                <th>Link to HTML</th>
+                            </tr>
+                            ${filings.map(filing => `
+                                <tr>
+                                    <td>${ticker}</td>
+                                    <td>${filing.cik}</td>
+                                    <td>${filing.form_type}</td>
+                                    <td>${filing.filing_date}</td>
+                                    <td><a href="${filing.url}">View Filing</a></td>
+                                </tr>
+                            `).join('')}
+                        </table>`;
+                    document.getElementById("filingsTable").innerHTML = table;
+                })
+                .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
