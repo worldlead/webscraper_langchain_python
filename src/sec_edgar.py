@@ -25,16 +25,22 @@ def _request_single_form_type(ticker, form_type):
 def _request_all_form_types(ticker):
     result = []
     form_types = [
-        "10-K",
-        "10-Q",
-        "8-K",
-        # "Proxy Statement (DEF 14A)",
-        # "Form 4",
-        "S-1",
-        "S-3",
-        # "Form 3",
-        # "Form 13D/13G"
+        'NO ACT', 'SC 13G/A', 'S-8', '8-K', 'CERT', 'CERTNYS', 'FWP', '25-NSE',
+        '424B2', 'CORRESP', 'DEFA14A', 'S-8 POS', 'DEF 14A', 'IRANNOTICE', '144',
+        'PX14A6G', '10-K', 'PRE 14A', '8-K/A', 'PX14A6N', '10-Q', 'UPLOAD',
+        '8-A12B', 'DFAN14A', 'SD', 'SC 13G', '25', 'S-3ASR'
     ]
+    # form_types = [
+    #     "10-K",
+    #     "10-Q",
+    #     # "8-K",
+    #     # "Proxy Statement (DEF 14A)",
+    #     # "Form 4",
+    #     # "S-1",
+    #     # "S-3",
+    #     # "Form 3",
+    #     # "Form 13D/13G"
+    # ]
     for form_type in form_types:
         filings = _request_single_form_type(ticker, form_type)
         print(filings)
