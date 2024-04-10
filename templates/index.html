@@ -12,16 +12,30 @@
         <form id="tickerForm">
             <label for="ticker">Enter Ticker Symbol:</label>
             <input type="text" id="ticker" name="ticker" required>
+            <label for="filingType">Choose Filing Type:</label>
+            <select id="filingType" name="filingType">
+                <option value="10-K">10-K</option>
+                <option value="10-Q">10-Q</option>
+                <option value="8-K">8-K</option>
+                <!-- Add more filing types as needed -->
+            </select>
             <button type="submit">Get Recent Filings</button>
         </form>
         <div id="filingsTable"></div>
     </div>
+    <iframe id="documentIFrame" src="" style="display: none"></iframe>
 
     <script>
+      function openDocumentIFrame(url) {
+        const iframe = document.querySelector("#documentIFrame");
+        iframe.src = `/get_filing_html?url=${encodeURI(url)}`;
+        iframe.style.display = "block";
+      }
         document.getElementById("tickerForm").addEventListener("submit", function(event) {
             event.preventDefault();
             const ticker = document.getElementById("ticker").value;
-            fetch(`/recent_filings?company=${ticker}`)
+            const filingType = document.getElementById("filingType").value;
+          fetch(`/recent_filings?company=${ticker}&filing_type=${filingType}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.error) {
@@ -45,7 +59,7 @@
                                     <td>${filing.cik}</td>
                                     <td>${filing.form_type}</td>
                                     <td>${filing.filing_date}</td>
-                                    <td><a href="${filing.url}">View Filing</a></td>
+                                    <td><button onclick="openDocumentIFrame('${filing.url}')">View Document</button></td>
                                 </tr>
                             `).join('')}
                         </table>`;

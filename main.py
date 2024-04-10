@@ -1,5 +1,6 @@
+import requests
 from flask import Flask, render_template, jsonify, request
-from src.sec_edgar import request_recent_filings
+from src.sec_edgar import request_recent_filings, download_sec_html
 
 app = Flask(__name__)
 
@@ -27,25 +28,32 @@ def serve_static(path):
 @app.route('/recent_filings')
 def get_recent_filings():
     company = request.args.get('company')
-    recent_filings = request_recent_filings(company)
+    filing_type = request.args.get('filing_type')
+
+    if not filing_type:
+        filing_type = "10-K"
+
+    recent_filings = request_recent_filings(company, filing_type)
 
     if recent_filings == None:
         return jsonify({"error": "Company not found"}), 404
 
     return jsonify({"company": company, "filings": recent_filings})
 
-@app.route('/filing_html_link')
+@app.route('/get_filing_html')
 def get_filing_html():
-    company = request.args.get('company')
-    filing_type = request.args.get('filing_type')
-    if not all([company, filing_type]):
-        return jsonify({"error": "Company and filing_type are required"}), 400
-    
-    if company not in recent_filings_data or filing_type not in recent_filings_data[company]:
-        return jsonify({"error": "Filing not found"}), 404
-    
-    filing_html_link = get_filing_html_link(company, filing_type)
-    return jsonify({"company": company, "filing_type": filing_type, "html_link": filing_html_link})
+    url = request.args.get('url')
+
+    # Make sure that the URL actually goes to sec.gov
+    if not url.startswith("https://www.sec.gov/"):
+        return jsonify({"error": "Invalid SEC URL"}), 400
+
+    try:
+        html = download_sec_html(url)
+        return html
+    except:
+        print(f'There was an error downloading the SEC HTML for {url}')
+        return jsonify({"error": "Invalid SEC URL"}), 404
 
 if __name__ == '__main__':
     app.run(debug=True)
