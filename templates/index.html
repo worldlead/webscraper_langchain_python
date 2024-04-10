@@ -5,25 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SEC Filings</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('serve_static', path='css/style.css') }}">
+    <style>
+    #page{
+      display: flex;
+      flex-direction: horizontal;
+    }
+    #documentIFrame{
+      width: 40vw;
+    }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>SEC Filings</h1>
-        <form id="tickerForm">
-            <label for="ticker">Enter Ticker Symbol:</label>
-            <input type="text" id="ticker" name="ticker" required>
-            <label for="filingType">Choose Filing Type:</label>
-            <select id="filingType" name="filingType">
-                <option value="10-K">10-K</option>
-                <option value="10-Q">10-Q</option>
-                <option value="8-K">8-K</option>
-                <!-- Add more filing types as needed -->
-            </select>
-            <button type="submit">Get Recent Filings</button>
-        </form>
-        <div id="filingsTable"></div>
+    <div id="page">
+      <div class="container">
+          <h1>SEC Filings</h1>
+          <form id="tickerForm">
+              <label for="ticker">Enter Ticker Symbol:</label>
+              <input type="text" id="ticker" name="ticker" required>
+              <label for="filingType">Choose Filing Type:</label>
+              <select id="filingType" name="filingType">
+                  <option value="10-K">10-K</option>
+                  <option value="10-Q">10-Q</option>
+                  <option value="8-K">8-K</option>
+              </select>
+              <button type="submit">Get Recent Filings</button>
+          </form>
+          <div id="filingsTable"></div>
+      </div>
+      <iframe id="documentIFrame" src="" style="display: none"></iframe>
     </div>
-    <iframe id="documentIFrame" src="" style="display: none"></iframe>
 
     <script>
       function openDocumentIFrame(url) {
