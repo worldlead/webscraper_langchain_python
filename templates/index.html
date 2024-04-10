@@ -13,6 +13,9 @@
     #documentIFrame{
       width: 40vw;
     }
+    #loadingText.hidden{
+      display: none;
+    }
     </style>
 </head>
 <body>
@@ -24,6 +27,7 @@
               <input type="text" id="ticker" name="ticker" required>
               <label for="filingType">Choose Filing Type:</label>
               <select id="filingType" name="filingType">
+                  <option value="All">All</option>
                   <option value="10-K">10-K</option>
                   <option value="10-Q">10-Q</option>
                   <option value="8-K">8-K</option>
@@ -31,6 +35,7 @@
               <button type="submit">Get Recent Filings</button>
           </form>
           <div id="filingsTable"></div>
+          <p id="loadingText" class="hidden">Loading...</p>
       </div>
       <iframe id="documentIFrame" src="" style="display: none"></iframe>
     </div>
@@ -44,38 +49,43 @@
         document.getElementById("tickerForm").addEventListener("submit", function(event) {
             event.preventDefault();
             const ticker = document.getElementById("ticker").value;
+            const loadingText = document.getElementById("loadingText");
             const filingType = document.getElementById("filingType").value;
-          fetch(`/recent_filings?company=${ticker}&filing_type=${filingType}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.error) {
-                        alert(data.error);
-                        return;
-                    }
-                    console.log(data.filings);
-                    const filings = data.filings;
-                    const table = `
-                        <table>
-                            <tr>
-                                <th>Company</th>
-                                <th>CIK</th>
-                                <th>Filing Type</th>
-                                <th>Filing Date</th>
-                                <th>Link to HTML</th>
-                            </tr>
-                            ${filings.map(filing => `
-                                <tr>
-                                    <td>${ticker}</td>
-                                    <td>${filing.cik}</td>
-                                    <td>${filing.form_type}</td>
-                                    <td>${filing.filing_date}</td>
-                                    <td><button onclick="openDocumentIFrame('${filing.url}')">View Document</button></td>
-                                </tr>
-                            `).join('')}
-                        </table>`;
-                    document.getElementById("filingsTable").innerHTML = table;
-                })
-                .catch(error => console.error('Error:', error));
+            loadingText.classList.remove('hidden');
+            fetch(`/recent_filings?company=${ticker}&filing_type=${filingType}`)
+                  .then(response => response.json())
+                  .then(data => {
+                      if (data.error) {
+                          alert(data.error);
+                          return;
+                      }
+                      console.log(data.filings);
+                      const filings = data.filings;
+                      const table = `
+                          <table>
+                              <tr>
+                                  <th>Company</th>
+                                  <th>CIK</th>
+                                  <th>Filing Type</th>
+                                  <th>Filing Date</th>
+                                  <th>Link to HTML</th>
+                              </tr>
+                              ${filings.map(filing => `
+                                  <tr>
+                                      <td>${ticker}</td>
+                                      <td>${filing.cik}</td>
+                                      <td>${filing.form_type}</td>
+                                      <td>${filing.filing_date}</td>
+                                      <td><button onclick="openDocumentIFrame('${filing.url}')">View Document</button></td>
+                                  </tr>
+                              `).join('')}
+                          </table>`;
+                      document.getElementById("filingsTable").innerHTML = table;
+                  })
+                  .catch(error => console.error('Error:', error))
+                  .finally(_ => {
+                    loadingText.classList.add('hidden');
+                  });
         });
     </script>
 </body>

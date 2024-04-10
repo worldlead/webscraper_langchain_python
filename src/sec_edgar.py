@@ -13,12 +13,40 @@ def _metadata_to_dict(metadata):
             'filing_date': metadata.filing_date
             }
 
-def request_recent_filings(ticker, form_type="10-K"):
+def _request_single_form_type(ticker, form_type):
     try:
         metadatas = _dl.get_filing_metadatas(RequestedFilings(ticker_or_cik=ticker, form_type=form_type, limit=10000 ))
         return list(map(_metadata_to_dict, metadatas))
     except:
         print(f"There was an error getting filings for the ticker {ticker}")
+
+def _request_all_form_types(ticker):
+    result = []
+    form_types = [
+        "10-K",
+        "10-Q",
+        "8-K",
+        # "Proxy Statement (DEF 14A)",
+        # "Form 4",
+        "S-1",
+        "S-3",
+        # "Form 3",
+        # "Form 13D/13G"
+    ]
+    for form_type in form_types:
+        filings = _request_single_form_type(ticker, form_type)
+        print(filings)
+        if filings:
+            result += filings
+    return result
+
+
+
+def request_recent_filings(ticker, form_type="All"):
+    if form_type == "All":
+        return _request_all_form_types(ticker)
+    return _request_single_form_type(ticker, form_type)
+
 
 def download_sec_html(url):
     html = _dl.download_filing(url=url).decode()

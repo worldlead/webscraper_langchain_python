@@ -31,7 +31,7 @@ def get_recent_filings():
     filing_type = request.args.get('filing_type')
 
     if not filing_type:
-        filing_type = "10-K"
+        filing_type = "All"
 
     recent_filings = request_recent_filings(company, filing_type)
 
