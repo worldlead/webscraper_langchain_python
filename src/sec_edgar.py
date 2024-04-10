@@ -1,6 +1,6 @@
 from sec_downloader import Downloader
 from sec_downloader.types import RequestedFilings
-import sec_parser as sp
+import dateparser
 
 # Initialize the downloader with your company name and email
 _dl = Downloader("MyCompanyName", "email@example.com")
@@ -40,7 +40,7 @@ def _request_all_form_types(ticker):
         print(filings)
         if filings:
             result += filings
-    return result
+    return sorted(result, key=lambda filing: dateparser.parse(filing["filing_date"]), reverse=True)
 
 
 
