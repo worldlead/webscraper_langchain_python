@@ -63,6 +63,7 @@ def get_summary_from_url(url):
     try:
         message = "hi"
         response = get_response_from_GPT(message)
+        
         return response
     except Exception as e:
         print(e)
@@ -171,7 +172,8 @@ def get_summary():
         return jsonify({"error": "Invalid SEC URL"}), 400
     
     try:
-        get_summary_from_url(url)
+        response = get_summary_from_url(url)
+        print(response)
         return jsonify(url), 200
     except Exception as e:
         print(e)
