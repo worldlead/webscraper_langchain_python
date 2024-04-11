@@ -1,6 +1,6 @@
 import requests
 import os
-import openai
+from openai import OpenAI
 from dotenv import load_dotenv
 from flask import Flask, render_template, jsonify, request
 from src.sec_edgar import request_recent_filings, download_sec_html
@@ -22,7 +22,7 @@ app = Flask(__name__)
 load_dotenv('.env')
 
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
-openai.api_key = OPENAI_API_KEY
+client = OpenAI(api_key=OPENAI_API_KEY)
 
 # Mock data for demonstration purposes
 # Replace this with actual data fetching from SEC API
@@ -44,14 +44,14 @@ def get_text_chunks_langchain(text):
     return docs
 
 def get_response(message):
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model = 'gpt-3.5-turbo',
         temperature = 0.1,
-        message = [
+        messages = [
             {"role": "user", "content": message}
         ]
     )
-    return response.choices[0]["message"]["content"]
+    return response.choices[0].message
 
 def get_summary_from_url(url):
     # print(f'summarization start')
