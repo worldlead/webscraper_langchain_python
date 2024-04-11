@@ -171,6 +171,7 @@ def get_summary():
     
     try:
         summary = get_summary_from_url(url)
+        
         return jsonify(summary), 200
     except Exception as e:
         print(e)

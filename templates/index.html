@@ -89,8 +89,10 @@
       function openDocumentIFrame(url) {
         const iframe = document.querySelector("#documentIFrame");
         const button = document.querySelector(".display-summary");
+        const summaryDiv = document.querySelector("#summary-container");
         iframe.src = `/get_filing_html?url=${encodeURI(url)}`;
         iframe.style.display = "block";
+        summaryDiv.style.display = "none";
         button.style.display = "block";
       }
 
