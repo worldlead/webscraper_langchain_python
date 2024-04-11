@@ -116,7 +116,7 @@ def get_summary_from_url(url):
     # split_docs = text_splitter.split_documents(docs)
     result = map_reduce_chain.invoke(docs)
     summary = result['output_text']
-    print(summary)
+    return summary
     
 @app.route('/')
 def index():
@@ -170,9 +170,8 @@ def get_summary():
         return jsonify({"error": "Invalid SEC URL"}), 400
     
     try:
-        get_summary_from_url(url)
-       
-        return jsonify(url), 200
+        summary = get_summary_from_url(url)
+        return jsonify(summary), 200
     except Exception as e:
         print(e)
         return jsonify({"error": "error downloading"}), 404

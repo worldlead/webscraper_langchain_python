@@ -70,16 +70,18 @@
         <div id="filingsTable"></div>
       </div>
     
-    
-      <iframe id="documentIFrame" src="" style="display: none"></iframe>
-      <button
-        id=""
-        type="button"
-        class="display-summary"
-        style="display: block"
-      >
-        Show summary
-      </button>
+      <div>
+        <iframe id="documentIFrame" src="" style="display: none" height="600"></iframe>
+        <button
+          id=""
+          type="button"
+          class="display-summary"
+          style="display: none"
+        >
+          Show summary
+        </button>
+        <div id="summary-container" style="display: none"></div>
+      </div>
     </div>
 
     <script>
@@ -200,6 +202,8 @@
                 return;
               }
               console.log(data);
+              const summaryDiv = document.querySelector("#summary-container");
+              summaryDiv.innerHTML = data;
             })
             .catch((error) => console.error("Error:", error))
             .finally((_) => {
