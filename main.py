@@ -55,11 +55,12 @@ def get_response_from_GPT(message):
     return completion.choices[0].message.content
 
 def get_summary_from_url(url):
-    html = download_sec_html(url)
-    soup = BeautifulSoup(html, "html.parser")
-    text = soup.get_text()
+    # html = download_sec_html(url)
+    # soup = BeautifulSoup(html, "html.parser")
+    # text = soup.get_text()
     
-    message = "Summarize this and avoid the boiler plate info: " + text
+    # message = "Summarize this and avoid the boiler plate info: " + text
+    message = "hi"
     response = get_response_from_GPT(message)
     return response
     # print(response)
