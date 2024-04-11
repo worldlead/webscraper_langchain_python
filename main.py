@@ -43,8 +43,8 @@ def get_text_chunks_langchain(text):
     docs = [Document(page_content=x) for x in text_splitter.split_text(text)]
     return docs
 
-async def get_response(message):
-    response = await openai.ChatCompletion.create(
+def get_response(message):
+    response = openai.ChatCompletion.create(
         model = 'gpt-3.5-turbo',
         temperature = 0.1,
         message = [
@@ -53,7 +53,7 @@ async def get_response(message):
     )
     return response.choices[0]["message"]["content"]
 
-async def get_summary_from_url(url):
+def get_summary_from_url(url):
     # print(f'summarization start')
     # html = download_sec_html(url)
     # soup = BeautifulSoup(html, "html.parser")
@@ -61,8 +61,8 @@ async def get_summary_from_url(url):
     
     # message = "Summarize this and avoid the boiler plate info: " + text
     message = "hi"
-    # response = await get_response(message)
-    print("summary")
+    response = get_response(message)
+    print(response)
     
     # llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo")
 
@@ -157,7 +157,7 @@ def get_filing_html():
         return jsonify({"error": "Invalid SEC URL"}), 404
     
 @app.route('/get_summary')
-async def get_summary():
+def get_summary():
     url = request.args.get('url')
 
     # Make sure that the URL actually goes to sec.gov
@@ -165,8 +165,7 @@ async def get_summary():
         return jsonify({"error": "Invalid SEC URL"}), 400
     
     try:
-        await get_summary_from_url(url)
-        
+        get_summary_from_url(url)
         return jsonify(url), 200
     except:
         print(f'There was an error downloading')
