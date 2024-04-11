@@ -54,10 +54,10 @@ async def get_response(message):
     return response.choices[0]["message"]["content"]
 
 async def get_summary_from_url(url):
-    print(f'summarization start')
-    html = download_sec_html(url)
-    soup = BeautifulSoup(html, "html.parser")
-    text = soup.get_text()
+    # print(f'summarization start')
+    # html = download_sec_html(url)
+    # soup = BeautifulSoup(html, "html.parser")
+    # text = soup.get_text()
     
     # message = "Summarize this and avoid the boiler plate info: " + text
     message = "hi"
@@ -167,7 +167,7 @@ async def get_summary():
     try:
         summary = await get_summary_from_url(url)
         print(summary)
-        return jsonify({"success": True}), 200
+        return summary
     except:
         print(f'There was an error downloading')
 
