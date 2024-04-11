@@ -73,7 +73,7 @@ def get_summary_from_url(url):
     #Map
     map_template = """The following is a set of documents
     {docs}
-    Based on this list of docs, please identify the main themes
+    Based on this list of docs, please summarize these docs and avoid the boiler plate info.
     Helpful Answer:
     """
     map_prompt = PromptTemplate.from_template(map_template)
