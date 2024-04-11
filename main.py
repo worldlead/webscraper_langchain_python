@@ -56,17 +56,17 @@ def get_response():
     return completion.choices[0].message.content
 
 def get_summary_from_url(url):
-    
+    print(url)
     # print(f'summarization start')
     # html = download_sec_html(url)
     # soup = BeautifulSoup(html, "html.parser")
     # text = soup.get_text()
     
     # message = "Summarize this and avoid the boiler plate info: " + text
-    message = "hi"
+    # message = "hi"
    
-    response = get_response()
-    print(response)
+    # response = get_response()
+    # print(response)
     
     # llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo")
 
@@ -163,7 +163,7 @@ def get_filing_html():
 @app.route('/get_summary')
 def get_summary():
     url = request.args.get('url')
-
+    
     # Make sure that the URL actually goes to sec.gov
     if not url.startswith("https://www.sec.gov/"):
         return jsonify({"error": "Invalid SEC URL"}), 400
