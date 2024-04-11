@@ -60,9 +60,14 @@ def get_summary_from_url(url):
     # text = soup.get_text()
     
     # message = "Summarize this and avoid the boiler plate info: " + text
-    message = "hi"
-    response = get_response_from_GPT(message)
-    return response
+    try:
+        message = "hi"
+        response = get_response_from_GPT(message)
+        return response
+    except Exception as e:
+        print(e)
+        
+    
     # print(response)
     
     # llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo")
@@ -168,8 +173,8 @@ def get_summary():
     try:
         get_summary_from_url(url)
         return jsonify(url), 200
-    except:
-        print(f'There was an error downloading')
+    except Exception as e:
+        print(e)
         return jsonify({"error": "error downloading"}), 404
 
 if __name__ == '__main__':
