@@ -22,8 +22,8 @@ app = Flask(__name__)
 load_dotenv('.env')
 
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
-print(OPENAI_API_KEY)
-client = OpenAI(api_key=OPENAI_API_KEY)
+
+# client = OpenAI(api_key=OPENAI_API_KEY)
 
 # Mock data for demonstration purposes
 # Replace this with actual data fetching from SEC API
@@ -56,7 +56,15 @@ def get_response():
     return completion.choices[0].message.content
 
 def get_summary_from_url(url):
-    print(url)
+    client = OpenAI()
+    completion = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": "Hello!"}
+        ]
+    )
+    print(completion.choices[0].message.content)
     # print(f'summarization start')
     # html = download_sec_html(url)
     # soup = BeautifulSoup(html, "html.parser")
