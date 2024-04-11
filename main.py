@@ -54,6 +54,7 @@ def get_response(message):
     return response.choices[0].message
 
 def get_summary_from_url(url):
+    
     # print(f'summarization start')
     # html = download_sec_html(url)
     # soup = BeautifulSoup(html, "html.parser")
@@ -61,6 +62,7 @@ def get_summary_from_url(url):
     
     # message = "Summarize this and avoid the boiler plate info: " + text
     message = "hi"
+   
     response = get_response(message)
     print(response)
     
@@ -169,6 +171,7 @@ def get_summary():
         return jsonify(url), 200
     except:
         print(f'There was an error downloading')
+        return jsonify({"error": "Invalid SEC URL"}), 404
 
 if __name__ == '__main__':
     app.run(debug=True)
