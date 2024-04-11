@@ -17,8 +17,12 @@ from langchain_community.document_loaders import AsyncHtmlLoader
 from bs4 import BeautifulSoup
 from langchain.schema.document import Document
 
-load_dotenv('.env')
+
 app = Flask(__name__)
+load_dotenv('.env')
+
+OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
+openai.api_key = OPENAI_API_KEY
 
 # Mock data for demonstration purposes
 # Replace this with actual data fetching from SEC API
@@ -54,11 +58,12 @@ async def get_summary_from_url(url):
     html = download_sec_html(url)
     soup = BeautifulSoup(html, "html.parser")
     text = soup.get_text()
-    print(text)
-    message = "Summarize this and avoid the boiler plate info: " + text
+    
+    # message = "Summarize this and avoid the boiler plate info: " + text
+    message = "hi"
     response = await get_response(message)
-    print(response)
-    # OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
+    
+    
     # llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo")
 
     # #Map
