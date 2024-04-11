@@ -107,7 +107,7 @@ async def get_summary_from_url(url):
     # # split_docs = text_splitter.split_documents(docs)
 
     # print(map_reduce_chain.run(docs))
-
+    return response
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -160,7 +160,8 @@ async def get_summary():
         return jsonify({"error": "Invalid SEC URL"}), 400
     
     try:
-        await get_summary_from_url(url)
+        summary = await get_summary_from_url(url)
+        print(summary)
         return jsonify({"success": True}), 200
     except:
         print(f'There was an error downloading')
