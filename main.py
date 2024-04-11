@@ -44,16 +44,16 @@ def get_text_chunks_langchain(text):
     docs = [Document(page_content=x) for x in text_splitter.split_text(text)]
     return docs
 
-def get_response(message):
-    # completion = client.chat.completions.create(
-    #     model="gpt-3.5-turbo",
-    #     messages=[
-    #         {"role": "system", "content": "You are a helpful assistant."},
-    #         {"role": "user", "content": message}
-    #     ]
-    # )
-    result = "ok"
-    return result
+def get_response():
+    completion = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": "Hello!"}
+        ]
+    )
+    
+    return completion.choices[0].message.content
 
 def get_summary_from_url(url):
     
@@ -65,7 +65,7 @@ def get_summary_from_url(url):
     # message = "Summarize this and avoid the boiler plate info: " + text
     message = "hi"
    
-    response = get_response(message)
+    response = get_response()
     print(response)
     
     # llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo")
