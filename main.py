@@ -61,8 +61,8 @@ async def get_summary_from_url(url):
     
     # message = "Summarize this and avoid the boiler plate info: " + text
     message = "hi"
-    response = await get_response(message)
-    print(response)
+    # response = await get_response(message)
+    print("summary")
     
     # llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo")
 
