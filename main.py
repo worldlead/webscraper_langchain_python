@@ -169,9 +169,9 @@ def get_summary():
         return jsonify({"error": "Invalid SEC URL"}), 400
     
     try:
-        response = get_summary_from_url(url)
-        print(response)
-        return jsonify(response), 200
+        get_summary_from_url(url)
+       
+        return jsonify(url), 200
     except Exception as e:
         print(e)
         return jsonify({"error": "error downloading"}), 404
