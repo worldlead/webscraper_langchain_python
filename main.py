@@ -42,7 +42,7 @@ def get_filing_html_link(company, filing_type):
 
 
 def get_text_chunks_langchain(text):
-    text_splitter = TokenTextSplitter(chunk_size=100, chunk_overlap=0)
+    text_splitter = TokenTextSplitter(chunk_size=1000, chunk_overlap=0)
     docs = [Document(page_content=x) for x in text_splitter.split_text(text)]
     # texts = text_splitter.split_text(text)
     return docs
@@ -65,11 +65,8 @@ def get_summary_from_url(url):
    
     # message = "Summarize this and avoid the boiler plate info: " + text
     # response = get_response_from_GPT(message)
-    # return response
-
-        
     
-    # print(response)
+    # # print(response)
     
     llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo")
 
