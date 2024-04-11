@@ -47,6 +47,7 @@ def get_text_chunks_langchain(text):
 
 def get_summary_from_url(url):
     client = OpenAI()
+    print(client)
     completion = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
