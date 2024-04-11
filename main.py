@@ -41,7 +41,7 @@ def get_filing_html_link(company, filing_type):
 
 
 def get_text_chunks_langchain(text):
-    text_splitter = CharacterTextSplitter.from_tiktoken_encoder(chunk_size=1000, chunk_overlap=0)
+    text_splitter = CharacterTextSplitter.from_tiktoken_encoder(chunk_size=200, chunk_overlap=0)
     docs = [Document(page_content=x) for x in text_splitter.split_text(text)]
     return docs
 
@@ -115,7 +115,7 @@ def get_summary_from_url(url):
     # )
     # split_docs = text_splitter.split_documents(docs)
 
-    print(map_reduce_chain.run(docs))
+    print(map_reduce_chain.invoke(docs))
     
 @app.route('/')
 def index():
