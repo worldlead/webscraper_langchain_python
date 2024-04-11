@@ -8,7 +8,6 @@ from langchain.chains import MapReduceDocumentsChain, ReduceDocumentsChain
 from langchain_text_splitters import CharacterTextSplitter
 from langchain.chains.summarize import load_summarize_chain
 from langchain_community.document_loaders import WebBaseLoader
-from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
 from langchain.chains.llm import LLMChain
 from langchain.chains.combine_documents.stuff import StuffDocumentsChain
@@ -20,8 +19,9 @@ from langchain.schema.document import Document
 
 app = Flask(__name__)
 load_dotenv('.env')
-
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
+client = OpenAI(api_key=OPENAI_API_KEY)
+
 
 # client = OpenAI(api_key=OPENAI_API_KEY)
 
@@ -44,10 +44,7 @@ def get_text_chunks_langchain(text):
     docs = [Document(page_content=x) for x in text_splitter.split_text(text)]
     return docs
 
-
-def get_summary_from_url(url):
-    client = OpenAI()
-    print(client)
+def get_response_from_GPT(message):
     completion = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
@@ -55,16 +52,16 @@ def get_summary_from_url(url):
             {"role": "user", "content": "Hello!"}
         ]
     )
-    print(completion.choices[0].message.content)
-    # print(f'summarization start')
-    # html = download_sec_html(url)
-    # soup = BeautifulSoup(html, "html.parser")
-    # text = soup.get_text()
+    return completion.choices[0].message.content
+
+def get_summary_from_url(url):
+    html = download_sec_html(url)
+    soup = BeautifulSoup(html, "html.parser")
+    text = soup.get_text()
     
-    # message = "Summarize this and avoid the boiler plate info: " + text
-    # message = "hi"
-   
-    # response = get_response()
+    message = "Summarize this and avoid the boiler plate info: " + text
+    response = get_response_from_GPT(message)
+    return response
     # print(response)
     
     # llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo")
