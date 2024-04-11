@@ -114,8 +114,9 @@ def get_summary_from_url(url):
     #     chunk_size=1000, chunk_overlap=0
     # )
     # split_docs = text_splitter.split_documents(docs)
-
-    print(map_reduce_chain.invoke(docs))
+    result = map_reduce_chain.invoke(docs)
+    summary = result['output_text']
+    print(summary)
     
 @app.route('/')
 def index():
