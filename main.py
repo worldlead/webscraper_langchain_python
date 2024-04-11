@@ -55,18 +55,14 @@ def get_response_from_GPT(message):
     return completion.choices[0].message.content
 
 def get_summary_from_url(url):
-    # html = download_sec_html(url)
-    # soup = BeautifulSoup(html, "html.parser")
-    # text = soup.get_text()
-    
-    # message = "Summarize this and avoid the boiler plate info: " + text
-    try:
-        message = "hi"
-        response = get_response_from_GPT(message)
-        
-        return response
-    except Exception as e:
-        print(e)
+   
+    html = download_sec_html(url)
+    soup = BeautifulSoup(html, "html.parser")
+    text = soup.get_text()
+    message = "Summarize this and avoid the boiler plate info: " + text
+    response = get_response_from_GPT(message)
+    return response
+
         
     
     # print(response)
@@ -174,7 +170,7 @@ def get_summary():
     try:
         response = get_summary_from_url(url)
         print(response)
-        return jsonify(url), 200
+        return jsonify(response), 200
     except Exception as e:
         print(e)
         return jsonify({"error": "error downloading"}), 404
