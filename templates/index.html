@@ -1,111 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SEC Filings</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('serve_static', path='css/style.css') }}">
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('serve_static', path='css/style.css') }}"
+    />
     <style>
-    #page{
-      display: flex;
-      flex-direction: horizontal;
-    }
-    #documentIFrame{
-      width: 40vw;
-    }
-    #loadingText.hidden{
-      display: none;
-    }
+      #page {
+        display: flex;
+        flex-direction: horizontal;
+      }
+      #documentIFrame {
+        width: 40vw;
+      }
+      #loadingText.hidden {
+        display: none;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div id="page">
       <div class="container">
-          <h1>SEC Filings</h1>
-          <form id="tickerForm">
-              <label for="ticker">Enter Ticker Symbol:</label>
-              <input type="text" id="ticker" name="ticker" required>
-              <label for="filingType">Choose Filing Type:</label>
-              <select id="filingType" name="filingType">
-                  <option value="All">All</option>
+        <h1>SEC Filings</h1>
+        <form id="tickerForm">
+          <label for="ticker">Enter Ticker Symbol:</label>
+          <input type="text" id="ticker" name="ticker" required />
+          <label for="filingType">Choose Filing Type:</label>
+          <select id="filingType" name="filingType">
+            <option value="All">All</option>
 
-                  <option value="NO ACT">NO ACT</option>
-                  <option value="SC 13G/A">SC 13G/A</option>
-                  <option value="S-8">S-8</option>
-                  <option value="8-K">8-K</option>
-                  <option value="CERT">CERT</option>
-                  <option value="CERTNYS">CERTNYS</option>
-                  <option value="FWP">FWP</option>
-                  <option value="25-NSE">25-NSE</option>
-                  <option value="424B2">424B2</option>
-                  <option value="CORRESP">CORRESP</option>
-                  <option value="DEFA14A">DEFA14A</option>
-                  <option value="S-8 POS">S-8 POS</option>
-                  <option value="DEF 14A">DEF 14A</option>
-                  <option value="IRANNOTICE">IRANNOTICE</option>
-                  <option value="144">144</option>
-                  <option value="PX14A6G">PX14A6G</option>
-                  <option value="10-K">10-K</option>
-                  <option value="PRE 14A">PRE 14A</option>
-                  <option value="8-K/A">8-K/A</option>
-                  <option value="PX14A6N">PX14A6N</option>
-                  <option value="10-Q">10-Q</option>
-                  <option value="UPLOAD">UPLOAD</option>
-                  <option value="8-A12B">8-A12B</option>
-                  <option value="DFAN14A">DFAN14A</option>
-                  <option value="SD">SD</option>
-                  <option value="SC 13G">SC 13G</option>
-                  <option value="25">25</option>
-                  <option value="S-3ASR">S-3ASR</option>
-              </select>
-              <button type="submit">Get Recent Filings</button>
-          </form>
-          <div id="filingsTable"></div>
-          <p id="loadingText" class="hidden">Loading...</p>
-          <div id="pagination"></div>
-          <div id="filingsTable"></div>
+            <option value="NO ACT">NO ACT</option>
+            <option value="SC 13G/A">SC 13G/A</option>
+            <option value="S-8">S-8</option>
+            <option value="8-K">8-K</option>
+            <option value="CERT">CERT</option>
+            <option value="CERTNYS">CERTNYS</option>
+            <option value="FWP">FWP</option>
+            <option value="25-NSE">25-NSE</option>
+            <option value="424B2">424B2</option>
+            <option value="CORRESP">CORRESP</option>
+            <option value="DEFA14A">DEFA14A</option>
+            <option value="S-8 POS">S-8 POS</option>
+            <option value="DEF 14A">DEF 14A</option>
+            <option value="IRANNOTICE">IRANNOTICE</option>
+            <option value="144">144</option>
+            <option value="PX14A6G">PX14A6G</option>
+            <option value="10-K">10-K</option>
+            <option value="PRE 14A">PRE 14A</option>
+            <option value="8-K/A">8-K/A</option>
+            <option value="PX14A6N">PX14A6N</option>
+            <option value="10-Q">10-Q</option>
+            <option value="UPLOAD">UPLOAD</option>
+            <option value="8-A12B">8-A12B</option>
+            <option value="DFAN14A">DFAN14A</option>
+            <option value="SD">SD</option>
+            <option value="SC 13G">SC 13G</option>
+            <option value="25">25</option>
+            <option value="S-3ASR">S-3ASR</option>
+          </select>
+          <button type="submit">Get Recent Filings</button>
+        </form>
+        <div id="filingsTable"></div>
+        <p id="loadingText" class="hidden">Loading...</p>
+        <div id="pagination"></div>
+        <div id="filingsTable"></div>
       </div>
+    </div>
+    <div>
       <iframe id="documentIFrame" src="" style="display: none"></iframe>
+      <button
+        id=""
+        type="button"
+        class="display-summary"
+        style="display: block"
+      >
+        Show summary
+      </button>
     </div>
 
     <script>
+      // Open an iframe showing the content of documents
       function openDocumentIFrame(url) {
         const iframe = document.querySelector("#documentIFrame");
+        const button = document.querySelector(".display-summary");
         iframe.src = `/get_filing_html?url=${encodeURI(url)}`;
         iframe.style.display = "block";
+        button.style.display = "block";
       }
-        document.getElementById("tickerForm").addEventListener("submit", function(event) {
-            event.preventDefault();
-            const ticker = document.getElementById("ticker").value;
-            const loadingText = document.getElementById("loadingText");
-            const filingType = document.getElementById("filingType").value;
-            loadingText.classList.remove('hidden');
-            fetch(`/recent_filings?company=${ticker}&filing_type=${filingType}`)
-                  .then(response => response.json())
-                  .then(data => {
-                      if (data.error) {
-                          alert(data.error);
-                          return;
-                      }
-                      const filings = data.filings;
-                      const filingsPerPage = 20;
-                      const numPages = Math.ceil(filings.length / filingsPerPage);
-                      const currentPage = 1;
-                      updatePage(currentPage, numPages, filings, filingsPerPage);
-                  })
-                  .catch(error => console.error('Error:', error))
-                  .finally(_ => {
-                    loadingText.classList.add('hidden');
-                  });
-        });
-        function updatePage(pageNum, numPages, filings, filingsPerPage) {
-            const startIndex = (pageNum - 1) * filingsPerPage;
-            const endIndex = Math.min(startIndex + filingsPerPage, filings.length);
-            const filingsToShow = filings.slice(startIndex, endIndex);
 
-            console.log(filingsToShow)
-            
-            const tableContent = `
+      // Update a page when pagination occurs
+      function updatePage(pageNum, numPages, filings, filingsPerPage) {
+        const startIndex = (pageNum - 1) * filingsPerPage;
+        const endIndex = Math.min(startIndex + filingsPerPage, filings.length);
+        const filingsToShow = filings.slice(startIndex, endIndex);
+
+        console.log(filingsToShow);
+
+        const tableContent = `
                 <table>
                     <tr>
                         <th>Company</th>
@@ -114,7 +109,9 @@
                         <th>Filing Date</th>
                         <th>Link to HTML</th>
                     </tr>
-                    ${filingsToShow.map(filing => `
+                    ${filingsToShow
+                      .map(
+                        (filing) => `
                         <tr>
                             <td>${filing.company_name}</td>
                             <td>${filing.cik}</td>
@@ -122,35 +119,98 @@
                             <td>${filing.filing_date}</td>
                             <td><button onclick="openDocumentIFrame('${filing.url}')">View Document</button></td>
                         </tr>
-                    `).join('')}
+                    `
+                      )
+                      .join("")}
                 </table>`;
 
-            const prevPageButton = document.createElement("button");
-            prevPageButton.innerText = "prev";
-            const nextPageButton = document.createElement("button");
-            nextPageButton.innerText = "next";
-            
-            const pageNumText = document.createElement("p");
-            pageNumText.innerText = `page ${pageNum} / ${numPages}`
+        const prevPageButton = document.createElement("button");
+        prevPageButton.innerText = "prev";
+        const nextPageButton = document.createElement("button");
+        nextPageButton.innerText = "next";
 
-            prevPageButton.onclick = () => {
-                updatePage(pageNum - 1, numPages, filings, filingsPerPage);
-            }
-            nextPageButton.onclick = () => {
-                updatePage(pageNum + 1, numPages, filings, filingsPerPage);
-            }
-            
-            document.getElementById("filingsTable").innerHTML = tableContent;
-            const paginationContainer = document.getElementById("pagination");
-            paginationContainer.innerHTML = "";
-            if (pageNum > 1) {
-              paginationContainer.appendChild(prevPageButton);
-            }
-            if (pageNum !== numPages) {
-              paginationContainer.appendChild(nextPageButton);
-            }
-            paginationContainer.appendChild(pageNumText);
+        const pageNumText = document.createElement("p");
+        pageNumText.innerText = `page ${pageNum} / ${numPages}`;
+
+        prevPageButton.onclick = () => {
+          updatePage(pageNum - 1, numPages, filings, filingsPerPage);
+        };
+        nextPageButton.onclick = () => {
+          updatePage(pageNum + 1, numPages, filings, filingsPerPage);
+        };
+
+        document.getElementById("filingsTable").innerHTML = tableContent;
+        const paginationContainer = document.getElementById("pagination");
+        paginationContainer.innerHTML = "";
+        if (pageNum > 1) {
+          paginationContainer.appendChild(prevPageButton);
+        }
+        if (pageNum !== numPages) {
+          paginationContainer.appendChild(nextPageButton);
+        }
+        paginationContainer.appendChild(pageNumText);
       }
+      
+      // When the form is submitted
+      document
+        .getElementById("tickerForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+          const ticker = document.getElementById("ticker").value;
+          const loadingText = document.getElementById("loadingText");
+          const filingType = document.getElementById("filingType").value;
+          loadingText.classList.remove("hidden");
+          fetch(`/recent_filings?company=${ticker}&filing_type=${filingType}`)
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.error) {
+                alert(data.error);
+                return;
+              }
+              const filings = data.filings;
+              const filingsPerPage = 20;
+              const numPages = Math.ceil(filings.length / filingsPerPage);
+              const currentPage = 1;
+              updatePage(currentPage, numPages, filings, filingsPerPage);
+            })
+            .catch((error) => console.error("Error:", error))
+            .finally((_) => {
+              loadingText.classList.add("hidden");
+            });
+        });
+
+      // When click the "Show summary" button
+      document
+       .querySelector(".display-summary")
+       .addEventListener("click", function (event) {
+          event.preventDefault();
+          const iframe = document.querySelector("#documentIFrame");
+          const button = document.querySelector(".display-summary");
+
+          // Extract the document url from the iframe.src
+          const url = new URL(iframe.src);
+          const extractedUrl = url.searchParams.get('url');
+
+          // Fetch the summary for the selected page
+          fetch(`/get_summary?url=${encodeURI(extractedUrl)}`)
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.error) {
+                alert(data.error);
+                return;
+              }
+              console.log(data);
+            })
+            .catch((error) => console.error("Error:", error))
+            .finally((_) => {
+              loadingText.classList.add("hidden");
+            });
+          
+          
+        });
     </script>
-</body>
+
+      
+    </script>
+  </body>
 </html>

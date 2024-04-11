@@ -1,7 +1,18 @@
 import requests
+import os
+from dotenv import load_dotenv
 from flask import Flask, render_template, jsonify, request
 from src.sec_edgar import request_recent_filings, download_sec_html
+from langchain.chains import MapReduceDocumentsChain, ReduceDocumentsChain
+from langchain_text_splitters import CharacterTextSplitter
+from langchain.chains.summarize import load_summarize_chain
+from langchain_community.document_loaders import WebBaseLoader
+from langchain_openai import ChatOpenAI
+from langchain_core.prompts import PromptTemplate
+from langchain.chains.llm import LLMChain
+from langchain.chains.combine_documents.stuff import StuffDocumentsChain
 
+load_dotenv('.env')
 app = Flask(__name__)
 
 # Mock data for demonstration purposes
@@ -17,6 +28,59 @@ def get_filing_html_link(company, filing_type):
     # Mock link generation, replace this with actual logic
     return f"https://example.com/{company}/{filing_type}.html"
 
+def get_summary_from_url(url):
+    
+    loader = WebBaseLoader(url)
+    docs = loader.load()
+    OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
+    llm = ChatOpenAI(openAIApiKey=OPENAI_API_KEY, temperature=0, model_name="gpt-3.5-turbo")
+
+    #Map
+    map_template = """The following is a set of documents
+    {docs}
+    Based on this list of docs, please identify the main themes
+    Helpful Answer:
+    """
+    map_prompt = PromptTemplate.from_template(map_template)
+    map_chain = LLMChain(llm=llm, prompt=map_prompt)
+
+    #Reduce
+    reduce_template = """The following is a set of summaries:
+    {docs}
+    Take these and distill it into a final, consolidated summary of the main themes.
+    Helpful Answer:
+    """
+    reduce_prompt = PromptTemplate.from_template(reduce_template)
+
+    #Run chain
+    reduce_chain = LLMChain(llm=llm, prompt=reduce_prompt)
+
+    #Takes a list of documents, combines them into a single string, and passes this to an LLMChain
+    combine_documents_chain = StuffDocumentsChain(
+        llm_chain=reduce_chain, document_variable_name="docs"
+    )
+
+    #Combines and iteratively reduces the mapped documents
+    reduce_documents_chain = ReduceDocumentsChain(
+        combine_documents_chain=combine_documents_chain,
+        collapse_documents_chain=combine_documents_chain,
+        token_max=4000,
+    )
+
+    #Combining documents by mapping a chain over them, then combining results
+    map_reduce_chain = MapReduceDocumentsChain(
+        llm_chain=map_chain,
+        reduce_documents_chain=reduce_documents_chain,
+        document_variable_name="docs",
+        return_intermediate_steps=False
+    )
+
+    text_splitter = CharacterTextSplitter.from_tiktoken_encoder(
+        chunk_size=1000, chunk_overlap=0
+    )
+    split_docs = text_splitter.split_documents(docs)
+
+    print(map_reduce_chain.run(split_docs))
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -59,6 +123,19 @@ def get_filing_html():
     except:
         print(f'There was an error downloading the SEC HTML for {url}')
         return jsonify({"error": "Invalid SEC URL"}), 404
+    
+@app.route('/get_summary')
+def get_summary():
+    url = request.arg.get('url')
+
+    # Make sure that the URL actually goes to sec.gov
+    if not url.startswith("https://www.sec.gov/"):
+        return jsonify({"error": "Invalid SEC URL"}), 400
+    
+    try:
+        get_summary_from_url(url)
+    except:
+        print(f'There was an error downloading')
 
 if __name__ == '__main__':
     app.run(debug=True)
