@@ -22,6 +22,7 @@ app = Flask(__name__)
 load_dotenv('.env')
 
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
+print(OPENAI_API_KEY)
 client = OpenAI(api_key=OPENAI_API_KEY)
 
 # Mock data for demonstration purposes
@@ -48,9 +49,11 @@ def get_response(message):
         model = 'gpt-3.5-turbo',
         temperature = 0.1,
         messages = [
+            {"role": "system", "content": "You are a helpful assistant."},
             {"role": "user", "content": message}
         ]
     )
+    print(response.choices[0].message)
     return response.choices[0].message
 
 def get_summary_from_url(url):
