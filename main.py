@@ -62,7 +62,7 @@ async def get_summary_from_url(url):
     # message = "Summarize this and avoid the boiler plate info: " + text
     message = "hi"
     response = await get_response(message)
-    
+    print(response)
     
     # llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo")
 
@@ -112,7 +112,7 @@ async def get_summary_from_url(url):
     # # split_docs = text_splitter.split_documents(docs)
 
     # print(map_reduce_chain.run(docs))
-    return response
+    
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -165,9 +165,9 @@ async def get_summary():
         return jsonify({"error": "Invalid SEC URL"}), 400
     
     try:
-        summary = await get_summary_from_url(url)
-        print(summary)
-        return summary
+        await get_summary_from_url(url)
+        
+        return jsonify(url), 200
     except:
         print(f'There was an error downloading')
 
