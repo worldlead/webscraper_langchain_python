@@ -14,6 +14,7 @@ from langchain.chains.llm import LLMChain
 from langchain.chains.combine_documents.stuff import StuffDocumentsChain
 from langchain_community.document_transformers import Html2TextTransformer
 from langchain_community.document_loaders import AsyncHtmlLoader
+from langchain_text_splitters import TokenTextSplitter
 from bs4 import BeautifulSoup
 from langchain.schema.document import Document
 
@@ -41,8 +42,9 @@ def get_filing_html_link(company, filing_type):
 
 
 def get_text_chunks_langchain(text):
-    text_splitter = CharacterTextSplitter.from_tiktoken_encoder(chunk_size=200, chunk_overlap=0)
+    text_splitter = TokenTextSplitter(chunk_size=100, chunk_overlap=0)
     docs = [Document(page_content=x) for x in text_splitter.split_text(text)]
+    # texts = text_splitter.split_text(text)
     return docs
 
 def get_response_from_GPT(message):
@@ -60,6 +62,7 @@ def get_summary_from_url(url):
     soup = BeautifulSoup(html, "html.parser")
     text = soup.get_text()
     docs = get_text_chunks_langchain(text)
+   
     # message = "Summarize this and avoid the boiler plate info: " + text
     # response = get_response_from_GPT(message)
     # return response
