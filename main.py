@@ -152,7 +152,7 @@ def get_filing_html():
         return jsonify({"error": "Invalid SEC URL"}), 404
     
 @app.route('/get_summary')
-def get_summary():
+async def get_summary():
     url = request.args.get('url')
 
     # Make sure that the URL actually goes to sec.gov
@@ -160,7 +160,7 @@ def get_summary():
         return jsonify({"error": "Invalid SEC URL"}), 400
     
     try:
-        get_summary_from_url(url)
+        await get_summary_from_url(url)
         return jsonify({"success": True}), 200
     except:
         print(f'There was an error downloading')
