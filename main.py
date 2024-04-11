@@ -45,13 +45,13 @@ def get_text_chunks_langchain(text):
     return docs
 
 def get_response(message):
-    completion = client.chat.completions.create(
-        model = 'gpt-3.5-turbo',
-        messages = [
-            {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": message}
-        ]
-    )
+    # completion = client.chat.completions.create(
+    #     model="gpt-3.5-turbo",
+    #     messages=[
+    #         {"role": "system", "content": "You are a helpful assistant."},
+    #         {"role": "user", "content": message}
+    #     ]
+    # )
     result = "ok"
     return result
 
