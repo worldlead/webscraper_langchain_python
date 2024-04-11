@@ -203,6 +203,7 @@
               }
               console.log(data);
               const summaryDiv = document.querySelector("#summary-container");
+              summaryDiv.style.display = "block";
               summaryDiv.innerHTML = data;
             })
             .catch((error) => console.error("Error:", error))
