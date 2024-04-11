@@ -171,7 +171,7 @@ def get_summary():
         return jsonify(url), 200
     except:
         print(f'There was an error downloading')
-        return jsonify({"error": "Invalid SEC URL"}), 404
+        return jsonify({"error": "error downloading"}), 404
 
 if __name__ == '__main__':
     app.run(debug=True)
