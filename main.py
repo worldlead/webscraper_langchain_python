@@ -11,6 +11,10 @@ from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
 from langchain.chains.llm import LLMChain
 from langchain.chains.combine_documents.stuff import StuffDocumentsChain
+from langchain_community.document_transformers import Html2TextTransformer
+from langchain_community.document_loaders import AsyncHtmlLoader
+from bs4 import BeautifulSoup
+from langchain.schema.document import Document
 
 load_dotenv('.env')
 app = Flask(__name__)
@@ -28,10 +32,19 @@ def get_filing_html_link(company, filing_type):
     # Mock link generation, replace this with actual logic
     return f"https://example.com/{company}/{filing_type}.html"
 
+
+def get_text_chunks_langchain(text):
+    text_splitter = CharacterTextSplitter(chunk_size=500, chunk_overlap=100)
+    docs = [Document(page_content=x) for x in text_splitter.split_text(text)]
+    return docs
+
 def get_summary_from_url(url):
+    print(f'summarization start')
+    html = download_sec_html(url)
+    soup = BeautifulSoup(html, "html.parser")
+    text = soup.get_text()
+    docs = get_text_chunks_langchain(text)
     
-    loader = WebBaseLoader(url)
-    docs = loader.load()
     OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
     llm = ChatOpenAI(openAIApiKey=OPENAI_API_KEY, temperature=0, model_name="gpt-3.5-turbo")
 
@@ -81,6 +94,7 @@ def get_summary_from_url(url):
     split_docs = text_splitter.split_documents(docs)
 
     print(map_reduce_chain.run(split_docs))
+    
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -126,7 +140,7 @@ def get_filing_html():
     
 @app.route('/get_summary')
 def get_summary():
-    url = request.arg.get('url')
+    url = request.args.get('url')
 
     # Make sure that the URL actually goes to sec.gov
     if not url.startswith("https://www.sec.gov/"):
@@ -134,6 +148,7 @@ def get_summary():
     
     try:
         get_summary_from_url(url)
+        return jsonify({"success": True}), 200
     except:
         print(f'There was an error downloading')
 
