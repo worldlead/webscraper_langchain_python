@@ -34,7 +34,7 @@ def get_filing_html_link(company, filing_type):
 
 
 def get_text_chunks_langchain(text):
-    text_splitter = CharacterTextSplitter(chunk_size=500, chunk_overlap=100)
+    text_splitter = CharacterTextSplitter.from_tiktoken_encoder(chunk_size=1000, chunk_overlap=0)
     docs = [Document(page_content=x) for x in text_splitter.split_text(text)]
     return docs
 
@@ -46,7 +46,7 @@ def get_summary_from_url(url):
     docs = get_text_chunks_langchain(text)
     
     OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
-    llm = ChatOpenAI(openAIApiKey=OPENAI_API_KEY, temperature=0, model_name="gpt-3.5-turbo")
+    llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo")
 
     #Map
     map_template = """The following is a set of documents
@@ -88,13 +88,13 @@ def get_summary_from_url(url):
         return_intermediate_steps=False
     )
 
-    text_splitter = CharacterTextSplitter.from_tiktoken_encoder(
-        chunk_size=1000, chunk_overlap=0
-    )
-    split_docs = text_splitter.split_documents(docs)
+    # text_splitter = CharacterTextSplitter.from_tiktoken_encoder(
+    #     chunk_size=1000, chunk_overlap=0
+    # )
+    # split_docs = text_splitter.split_documents(docs)
 
-    print(map_reduce_chain.run(split_docs))
-    
+    print(map_reduce_chain.run(docs))
+
 @app.route('/')
 def index():
     return render_template('index.html')
