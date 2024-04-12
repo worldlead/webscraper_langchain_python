@@ -20,15 +20,20 @@
       padding: 20px;
       display: flex;
       width: 1200px;
-      gap: 10px;
     }
 
     .left-panel {
       display: flex;
       flex-direction: column;
+      transform: translate(5px, 0px);
     }
 
-    .right-panel {}
+    .right-panel {
+      width: 50vw;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
 
     .shadow {
       background-color: white;
@@ -36,7 +41,7 @@
     }
 
     #documentIFrame {
-      width: 40vw;
+      width: 100%;
 
       flex: 1;
       /* Takes up the remaining space */
@@ -61,7 +66,7 @@
 
     th,
     td {
-      padding: 8px;
+      padding: 15px;
     }
 
     tr {
@@ -117,6 +122,10 @@
       width: 30%;
     }
 
+    #summary-container {
+      padding-left: 30px;
+    }
+
     /* Add responsiveness */
     @media screen and (max-width: 768px) {
       #page {
@@ -132,6 +141,10 @@
         /* Half of the viewport height */
         width: 100vw;
         /* Full width of the viewport */
+      }
+
+      .right-containier {
+        width: 50vh;
       }
 
       .display-summary {
@@ -232,6 +245,14 @@
       button.style.display = "block";
     }
 
+    function selectRow(rowElement) {
+        const rows = document.querySelectorAll("#filingsTable tr");
+        rows.forEach(row => {
+            row.classList.remove('selected');  // Remove 'selected' from all rows
+        });
+        rowElement.classList.add('selected');  // Add 'selected' to the clicked row
+    }
+
     // Update a page when pagination occurs
     function updatePage(pageNum, numPages, filings, filingsPerPage) {
       const startIndex = (pageNum - 1) * filingsPerPage;
@@ -247,17 +268,15 @@
                         <th>CIK</th>
                         <th>Filing Type</th>
                         <th>Filing Date</th>
-                        <th>Link to HTML</th>
                     </tr>
                     ${filingsToShow
           .map(
             (filing) => `
-                        <tr>
+                        <tr class="shadow1" onclick="selectRow(this); openDocumentIFrame('${filing.url}')">
                             <td>${filing.company_name}</td>
                             <td>${filing.cik}</td>
                             <td>${filing.form_type}</td>
                             <td>${filing.filing_date}</td>
-                            <td><button onclick="openDocumentIFrame('${filing.url}')">View Document</button></td>
                         </tr>
                     `
           )
